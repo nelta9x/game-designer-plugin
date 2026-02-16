@@ -1,0 +1,21 @@
+{
+  "name": "game-designer",
+  "owner": {
+    "name": "nelta9x",
+    "email": "nelta9x@gmail.com"
+  },
+  "metadata": {
+    "description": "구현 가능한 상세 기획서를 설계하는 게임 디자이너 에이전트."
+  },
+  "plugins": [
+    {
+      "name": "game-designer-plugin",
+      "source": "./",
+      "description": "구현 가능한 상세 기획서를 설계하는 게임 디자이너 에이전트. 핵심 루프, 메커닉, 콘텐츠 규모, UI/UX, 비주얼 디렉션까지 상세 설계를 지원합니다. 디렉터 플러그인과 함께 사용하면 방향성을 이어받아 동작합니다.",
+      "homepage": "https://github.com/nelta9x/game-designer-plugin",
+      "repository": "https://github.com/nelta9x/game-designer-plugin",
+      "keywords": ["game-design", "game-designer", "detail-design", "core-loop", "game-mechanics"],
+      "category": "game-development"
+    }
+  ]
+}
