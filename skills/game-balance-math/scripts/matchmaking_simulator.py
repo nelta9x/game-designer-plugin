@@ -15,7 +15,7 @@ Usage
 Input JSON schema
 -----------------
 {
-  "mode": "elo_update" | "match_quality" | "simulate_season" | "rank_distribution",
+  "mode": "all" | "elo_update" | "match_quality" | "simulate_season" | "rank_distribution",
 
   // elo_update
   "matches": [
@@ -33,7 +33,9 @@ Input JSON schema
     "num_matches": 2000,
     "k": 24,
     "start_rating": 1500,
-    "start_spread": 300
+    "start_spread": 300,
+    "match_strategy": "random" | "skill_based",
+    "match_range": 200
   },
 
   // rank_distribution
@@ -131,8 +133,24 @@ def simulate_season(
     k: float = 24.0,
     start_rating: float = 1500.0,
     start_spread: float = 300.0,
+    match_strategy: str = "random",
+    match_range: float = 200.0,
 ) -> Dict[str, Any]:
-    """Simulate a season: assign true skill, run matches, report convergence."""
+    """Simulate a season: assign true skill, run matches, report convergence.
+
+    match_strategy:
+        "random"      — uniform random pairing (convergence test)
+        "skill_based" — prefer opponents within ±match_range of rating
+    """
+    if num_players < 2:
+        raise ValueError(f"num_players must be >= 2, got {num_players}")
+    if match_strategy not in ("random", "skill_based"):
+        raise ValueError(
+            f"match_strategy must be 'random' or 'skill_based', got '{match_strategy}'"
+        )
+    if match_range < 0:
+        raise ValueError(f"match_range must be >= 0, got {match_range}")
+
     true_skill = [random.gauss(start_rating, start_spread) for _ in range(num_players)]
     ratings = [start_rating] * num_players
     games_played = [0] * num_players
@@ -140,7 +158,23 @@ def simulate_season(
     total_quality = 0.0
 
     for _ in range(num_matches):
-        i, j = random.sample(range(num_players), 2)
+        if match_strategy == "skill_based":
+            i = random.randrange(num_players)
+            best_j = -1
+            best_dist = float("inf")
+            in_range: List[int] = []
+            for c in range(num_players):
+                if c == i:
+                    continue
+                dist = abs(ratings[c] - ratings[i])
+                if dist <= match_range:
+                    in_range.append(c)
+                if dist < best_dist:
+                    best_dist = dist
+                    best_j = c
+            j = random.choice(in_range) if in_range else best_j
+        else:
+            i, j = random.sample(range(num_players), 2)
 
         # determine winner by true skill difference
         p_i_wins = elo_expected(true_skill[i], true_skill[j])
@@ -170,6 +204,7 @@ def simulate_season(
         "num_players": num_players,
         "num_matches": num_matches,
         "k": k,
+        "match_strategy": match_strategy,
         "avg_games_per_player": avg_games,
         "avg_rating_error": avg_error,
         "avg_match_quality": total_quality / max(num_matches, 1),
@@ -195,6 +230,27 @@ def rank_distribution(
             {"name": "Master", "percentile_upper": 99},
             {"name": "GM", "percentile_upper": 100},
         ]
+
+    prev_pct = 0.0
+    for idx, tier in enumerate(tiers):
+        name = tier.get("name")
+        if not name:
+            raise ValueError(f"tiers[{idx}].name is required")
+        pct = to_float(tier.get("percentile_upper", 100))
+        if not (0 < pct <= 100):
+            raise ValueError(
+                f"percentile_upper must be in (0, 100]: "
+                f"'{name}' has {pct}"
+            )
+        if pct <= prev_pct:
+            raise ValueError(
+                f"percentile_upper must be strictly ascending: "
+                f"'{name}' ({pct}) <= previous ({prev_pct})"
+            )
+        prev_pct = pct
+
+    if prev_pct != 100:
+        raise ValueError(f"last percentile_upper must be 100 (got {prev_pct})")
 
     results: List[Dict[str, Any]] = []
     prev_upper = 0
@@ -282,6 +338,7 @@ def render_season_md(result: Dict[str, Any]) -> str:
     lines.append(f"| Players | {result['num_players']} |")
     lines.append(f"| Total Matches | {result['num_matches']} |")
     lines.append(f"| K-factor | {result['k']} |")
+    lines.append(f"| Match Strategy | {result['match_strategy']} |")
     lines.append(f"| Avg Games/Player | {_fmt(result['avg_games_per_player'],1)} |")
     lines.append(f"| Avg Rating Error | {_fmt(result['avg_rating_error'],1)} |")
     lines.append(f"| Avg Match Quality | {_fmt(result['avg_match_quality'],3)} |")
@@ -360,6 +417,10 @@ def main() -> None:
         data = DEFAULT_INPUT
 
     mode = data.get("mode", "all")
+    valid_modes = {"all", "elo_update", "match_quality", "simulate_season", "rank_distribution"}
+    if mode not in valid_modes:
+        parser.error(f"unknown mode '{mode}' in input. Valid: {', '.join(sorted(valid_modes))}")
+
     outputs: Dict[str, Any] = {}
     md_parts: List[str] = []
 
@@ -401,6 +462,8 @@ def main() -> None:
             k=to_float(season.get("k"), 24),
             start_rating=to_float(season.get("start_rating"), 1500),
             start_spread=to_float(season.get("start_spread"), 300),
+            match_strategy=season.get("match_strategy", "random"),
+            match_range=to_float(season.get("match_range"), 200),
         )
         outputs["simulate_season"] = result
         md_parts.append(render_season_md(result))
