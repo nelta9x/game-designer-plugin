@@ -73,6 +73,18 @@
       "primary": "enhancement-expected-cost.md",
       "secondary": "pity-systems.md",
       "output": "평균/p90/p95 소모량"
+    },
+    {
+      "signal": "매칭, MMR, 레이팅, Elo, 실력 측정",
+      "primary": "matchmaking-rating-rank.md",
+      "secondary": "encounter-clear-probability.md",
+      "output": "레이팅 모델 선택/매칭 품질-대기 트레이드오프"
+    },
+    {
+      "signal": "랭크, 티어, 배치, 시즌 리셋, 승률 목표",
+      "primary": "matchmaking-rating-rank.md",
+      "secondary": "curve-genre-tempo.md",
+      "output": "랭크 분포 설계/시즌 리셋 전략"
     }
   ]
 }

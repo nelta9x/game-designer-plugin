@@ -1,6 +1,6 @@
 ---
 name: game-balance-math
-description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use when requests involve XP/level curves, TTK/EHP tuning, drop-rate weighting, pity or gacha or enhancement expected cost, clear probability, faucet-sink economy, percentile budgeting (p90/p95), or what-if comparisons. Also trigger on player-feel cues: 재미, 지루함, 억까, 속도감, 성장감, 벽, 손맛, 답답함.
+description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use when requests involve XP/level curves, TTK/EHP tuning, drop-rate weighting, pity or gacha or enhancement expected cost, clear probability, faucet-sink economy, matchmaking/MMR/Elo/Glicko rating, rank/tier distribution, queue time vs match quality, percentile budgeting (p90/p95), or what-if comparisons. Also trigger on player-feel cues: 재미, 지루함, 억까, 속도감, 성장감, 벽, 손맛, 답답함, 매칭, 랭크, 원사이드, 캐리.
 ---
 
 # 역할
@@ -36,6 +36,11 @@ description: 게임 밸런스 수학 모델링 및 테이블 설계 지원. Use 
 -   **Concept**: 밸런싱은 출시 후에도 계속됩니다. 제안한 수치가 의도대로 작동하는지 확인하려면 **무엇을 측정할지** 미리 설계해야 합니다.
 -   **Instruction**: 밸런스 모델을 제안할 때, 이를 검증하기 위한 **핵심 게임 로그(Log) 포인트**를 함께 제시하십시오.
     -   *Example*: "레벨 10 구간의 난이도를 높였습니다. 의도대로 작동하는지 보려면 평균 10레벨 클리어 시간과 10레벨 재시도 횟수 로그를 수집하여 모니터링하세요."
+
+## 5. Matchmaking & Rank (The Fair Fight)
+-   **Concept**: 매치메이킹은 "공정한 대결"과 "빠른 매칭"의 균형입니다. 레이팅이 실력을 측정하고, 매칭 알고리즘이 비슷한 실력을 연결하며, 랭크가 플레이어에게 위치감을 줍니다.
+-   **The Tradeoff**: 매칭 품질을 높이면 대기 시간이 늘고, 대기를 줄이면 불균형 매칭이 늘어납니다. 플레이어 풀 크기에 따라 허용 가능한 품질-시간 커브가 달라집니다.
+-   **Critical Check**: "매칭 허용 범위를 넓힌다면, 실력 차이로 인한 원사이드 경기가 체감상 몇 판에 1번 발생하는가? 플레이어가 그것을 수용할 수 있는가?"
 
 # 가정 프로토콜
 
@@ -303,6 +308,7 @@ int WeightedRandom(int[] weights) {
 | `scripts/economy_flow_simulator.py` | Faucet/Sink/TTE, 패치 전후 재고 추이 시뮬레이션 |
 | `scripts/enhancement_cost_simulator.py` | 강화 기대 시도/비용 + p50/p90/p95 계산 |
 | `scripts/clear_probability_tuner.py` | 로지스틱 클리어율 곡선/역산/재시도 횟수 계산 |
+| `scripts/matchmaking_simulator.py` | Elo 업데이트, 매칭 품질, 시즌 시뮬레이션, 랭크 분포 |
 
 입력 파일이 있으면 `--input <json>`을 사용하고, 없으면 각 스크립트의 내장 샘플로 바로 실행된다.
 
@@ -413,6 +419,7 @@ int WeightedRandom(int[] weights) {
 참고용 안내:
 - 아래 매핑은 절대 규칙이 아니라 시작점이다. 실제 선택은 게임 의도, 세션 길이, 콘텐츠 티어 수, 보상 구조에 따라 달라진다.
 - 불확실하면 1~2개의 질문으로 전제를 확인하거나, 가정을 명시하고 진행한다.
+- 참고 문서에 "이 문서의 범위 밖" 섹션이 있으면, 해당 영역의 요청은 WebSearch로 사례를 조사한다.
 
 아래 표는 참고 상황과 내용을 함께 요약한다.
 아래 표는 `routing/reference-routing.json` 단일 소스에서 생성되며, 수동 수정하지 않는다.
@@ -434,6 +441,8 @@ int WeightedRandom(int[] weights) {
 | 스테이지 난이도, 클리어율, 재시도 횟수 | `encounter-clear-probability.md` | 목표 클리어율/재시도 횟수 |
 | 인플레/디플레, 재화 수지, TTE | `economy-faucet-sink.md` | Faucet-Sink/TTE/패치 충격 |
 | 강화 기대비용, 파괴 리스크, 보호권 가치 | `enhancement-expected-cost.md` | 평균/p90/p95 소모량 |
+| 매칭, MMR, 레이팅, Elo, 실력 측정 | `matchmaking-rating-rank.md` | 레이팅 모델 선택/매칭 품질-대기 트레이드오프 |
+| 랭크, 티어, 배치, 시즌 리셋, 승률 목표 | `matchmaking-rating-rank.md` | 랭크 분포 설계/시즌 리셋 전략 |
 <!-- ROUTING_TABLE_END:skill -->
 
 | 파일 | 참고 상황 | 내용 |
@@ -450,6 +459,7 @@ int WeightedRandom(int[] weights) {
 | `economy-faucet-sink.md` | 경제 수지/인플레이션 | Faucet/Sink 수지식, TTE, 패치 충격 시뮬레이션 |
 | `encounter-clear-probability.md` | 스테이지 클리어율 | 로지스틱 클리어 확률 모델, 목표 확률 역산, 재시도 확률 |
 | `enhancement-expected-cost.md` | 강화 기대비용 | 상태전이 기반 기대 시도/비용, 퍼센타일 예산, 보호권 가치 |
+| `matchmaking-rating-rank.md` | MMR/매칭/랭크 | Elo/Glicko-2/TrueSkill 모델, 매칭 품질-대기 트레이드오프, 랭크 분포/시즌 리셋 |
 
 # 구체적 예시: The Migration Driver
 
