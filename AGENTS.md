@@ -12,7 +12,8 @@
 
 ## 구성 요소
 
-### 에이전트: `game-designer`
+### 스킬: `game-designer`
+- 게임 디자이너 페르소나. 메인 에이전트 컨텍스트에서 실행되어 다른 스킬(`content-alignment`, `game-balance-math`)을 직접 호출 가능
 
 ### 스킬: `content-alignment`
 - 콘텐츠 요소가 게임 방향성과 정합하는지 2축(행위 동사 / 결과 감정)으로 평가
