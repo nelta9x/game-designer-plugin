@@ -30,7 +30,7 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
 
 작성 순서:
 1. Direction One-Pager (아래 템플릿)를 파일로 저장한다.
-2. KPI Plan(섹션 10~12)을 `kpi-design` validate 스크립트로 검증한다.
+2. KPI Plan(섹션 11~13)을 `kpi-design` validate 스크립트로 검증한다.
 3. FAIL 시 수정 후 재검증한다.
 4. Decision Log, Priority Matrix를 파일로 저장한다.
 5. Quality Gate를 자가 점검한다.
@@ -39,9 +39,10 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
 1. **Intent Framing**: 게임이 해결하려는 플레이어 욕구와 목표 감정을 정리한다.
 2. **Option Compare (2안)**: 후보 A/B를 비교하고 각 장단점을 짧게 제시한다.
 3. **Commit One Direction**: 하나를 선택하고 선택 이유를 1~2문장으로 남긴다.
-4. **Priority Lock**: Must/Should/Won't를 고정한다.
-5. **Success + Release Bar**: 성공 기준(KPI)과 출시 품질 바를 수치 포함으로 정의한다.
-6. **Go/No-Go Rule**: 어떤 조건에서 진행/중단/재설계를 할지 명시한다.
+4. **Player Journey Sketch**: D0~D30+ 시간축으로 최소 4단계(입문/탐색/습관/장기)를 스케치한다. 각 단계에서 플레이어가 무엇을 경험하는지, 다음 단계로 끌어당기는 훅이 무엇인지 정의한다. 시스템 설계자·아티스트·개발자 누구나 읽고 "이 시점에 이 사람은 이걸 하고 있다"를 이해할 수 있는 수준으로 작성한다.
+5. **Priority Lock**: Must/Should/Won't를 고정한다.
+6. **Success + Release Bar**: 성공 기준(KPI)과 출시 품질 바를 수치 포함으로 정의한다.
+7. **Go/No-Go Rule**: 어떤 조건에서 진행/중단/재설계를 할지 명시한다.
 
 ## Output Format
 
@@ -89,16 +90,31 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
 2.
 3.
 
-## 8) 차별화 훅 (최대 2개)
+## 8) Player Journey
+
+시간축으로 플레이어의 경험 흐름을 나타낸다. 시스템 설계자·아티스트·개발자 누구나 읽고 "이 시점의 플레이어는 이것을 하고 있다"를 이해할 수 있어야 한다.
+
+| 단계 | 시점 | 플레이어 상태 | 핵심 경험 | 이탈 리스크 |
+|------|------|------------|---------|------------|
+| 입문 | D0~D3 | | | |
+| 탐색 | D4~D14 | | | |
+| 습관 | D15~D30 | | | |
+| 장기 | D30+ | | | |
+
+- 입문→탐색 훅:
+- 탐색→습관 훅:
+- 습관→장기 훅:
+
+## 9) 차별화 훅 (최대 2개)
 -
 -
 
-## 9) Priority Matrix
+## 10) Priority Matrix
 - Must Have (최대 3개): → 3개는 상한이지 목표가 아니다. 진짜 2개면 2개로 충분하다.
 - Should Have (최대 3개):
 - Won't (최대 3개):
 
-## 10) KPI Plan
+## 11) KPI Plan
 - Stage: [prototype / soft-launch / live]
 - Primary Outcome Metric: [KPI명]
   - Definition: [수식/정의]
@@ -107,7 +123,7 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
   - Rationale: [선정 근거 — Player Promise/핵심 재미와의 연결]
   - Decision Rule: [목표 미달 시 조치]
 
-## 11) Supporting KPIs
+## 12) Supporting KPIs
 - [KPI명]
   - Formula: [수식]
   - Target: [목표값]
@@ -116,19 +132,19 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
   - Decision Rule: [목표 미달 시 조치]
 (최대 6개)
 
-## 12) Instrumentation Events
+## 13) Instrumentation Events
 - [이벤트명]: [사용하는 KPI 목록]
 
-## 13) Release Bar (출시 품질 바)
+## 14) Release Bar (출시 품질 바)
 - 필수 품질 기준:
 - 금지 결함 기준:
 
-## 14) Go/No-Go 조건
+## 15) Go/No-Go 조건
 - Go:
 - No-Go:
 - Rework:
 
-## 15) 가정 로그 (최대 3개)
+## 16) 가정 로그 (최대 3개)
 - 가정:
   - 근거:
   - 영향:
@@ -165,6 +181,7 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
 3. [ ] 출시 품질 바가 수치/판단 기준 포함으로 작성되었는가
 4. [ ] Go/No-Go 조건이 모호하지 않게 명시되었는가
 5. [ ] 핵심 재미가 Player Promise에서 도출되고, 핵심 루프가 핵심 재미를 전달하는 구조인가
+6. [ ] Player Journey가 입문~장기(최소 4단계)로 작성되고, 각 단계 간 훅이 명시되었는가
 
 ## Gate Policy
 
@@ -180,7 +197,7 @@ Phase 1에서 합의된 방향을 기반으로 3종 산출물(Direction One-Page
 #### Hard Gate (차단 조건)
 1. Commit(선택안 + 선정 근거)이 채워져야 한다.
 2. Priority Matrix(Must/Should/Won't)가 모두 채워져야 한다.
-3. KPI Plan(섹션 10~12)이 작성되고, `kpi-design` validate가 PASS여야 한다.
+3. KPI Plan(섹션 11~13)이 작성되고, `kpi-design` validate가 PASS여야 한다.
 4. Release Bar가 채워져야 한다.
 5. Go/No-Go/Rework가 모두 채워져야 한다.
 
