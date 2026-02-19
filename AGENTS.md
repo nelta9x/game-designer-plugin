@@ -1,6 +1,6 @@
 # Game Designer Plugin
 
-게임 방향성 의사결정과 KPI 설계를 지원하는 플러그인.
+게임 방향성 의사결정, 상세 설계, KPI 설계를 지원하는 통합 플러그인.
 
 ## 설계 원칙
 
@@ -20,3 +20,21 @@
 
 ### 스킬: `game-balance-math`
 - 게임 밸런스 수치 설계를 위한 수학적 모델링, 프로세스, 참고 자료 제공
+
+### 스킬: `game-directing`
+- 게임의 큰 방향성과 핵심 재미를 설계하는 Senior Game Director. Player Promise 정의, 콘셉트 선택, 우선순위 결정(Must/Should/Won't), 마일스톤별 방향성 검증, 팀 제안 평가를 수행한다.
+
+### 스킬: `one-pager`
+- Direction One-Pager를 생성하는 워크플로우. Decision Workflow에 따라 방향성을 결정하고 3종 산출물(Direction One-Pager, Decision Log, Priority Matrix)을 작성한다.
+
+### 스킬: `kpi-design`
+- KPI Selection Guidelines에 따라 KPI Plan을 작성하고, 7가지 품질 규칙으로 검증한다.
+
+### 스킬: `milestone-review`
+- 마일스톤마다 플레이테스트 결과를 Direction One-Pager와 대조하여 방향성을 검증한다. 판정값 enum 검증과 집중 과제 수 제한을 스크립트로 체크한다.
+
+### 스킬: `drift-check`
+- 마일스톤 사이에 팀의 빌드가 합의된 방향에서 벗어나는지 점검하고 Drift Report를 작성한다.
+
+### 스킬: `live-pulse`
+- 출시 후 실제 플레이어 데이터로 방향성을 검증하고 Live Pulse Report를 작성한다.

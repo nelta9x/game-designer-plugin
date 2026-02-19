@@ -5,7 +5,7 @@
     "email": "nelta9x@gmail.com"
   },
   "metadata": {
-    "description": "구현 가능한 상세 기획서를 설계하는 게임 디자이너 스킬."
+    "description": "게임 방향성 의사결정과 상세 설계를 통합 지원하는 플러그인."
   },
   "plugins": [
     {
